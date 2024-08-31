@@ -4,7 +4,7 @@
 int main()
 {
 
-  Game *pGame = new Game("Skibidi Toilet Rizz", 640, 480);
+  Game *pGame = new Game("LunarLander", 640, 480);
   pGame->Init();
   while (pGame->IsRunning())
   {

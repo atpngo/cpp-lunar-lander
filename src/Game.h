@@ -5,6 +5,9 @@
 #include <SDL_image.h>
 #include <SDL_mixer.h>
 #include <string>
+#include "Lander.h"
+#include "Environment.h"
+#include <map>
 
 class Game 
 {
@@ -21,6 +24,7 @@ class Game
 
 
     private:
+        std::map<int,bool> KEYS;
         void HandleMouseDrag(SDL_Event e);
         SDL_Window *pWindow;
         SDL_Renderer *pRenderer;
@@ -37,12 +41,12 @@ class Game
         SDL_Texture *pHeaderText;
         // sample texture
         SDL_Texture *pImage;
-        // sample trctangle
-        SDL_Rect sampleRect; 
-        SDL_bool inSampleRect;
         // sample music
         Mix_Music *pMusic;
 
+        // POG MY DOG
+        Environment *pEnv;
+        Lander *pLander;
 
 };
 
