@@ -21,6 +21,7 @@ class Game
         void Render();
         void CleanUp();
         bool IsRunning();
+        void Run();
 
 
     private:
@@ -44,9 +45,18 @@ class Game
         // sample music
         Mix_Music *pMusic;
 
+        // Lander texture
+        SDL_Texture *pLanderTexture;
+        SDL_Texture *pThrustTexture;
+
         // POG MY DOG
         Environment *pEnv;
         Lander *pLander;
+
+        // Frame rate
+        float currTick;
+        float prevTick;
+        float deltaTime;
 
 };
 

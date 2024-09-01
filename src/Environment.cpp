@@ -25,3 +25,8 @@ float Environment::GetHeight()
 {
     return d.height;
 }
+
+const Vector Environment::GetGlobalAcceleration()
+{
+    return GRAVITY;
+}

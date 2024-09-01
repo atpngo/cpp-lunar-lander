@@ -9,9 +9,15 @@ Game::Game(std::string title, int width, int height)
     pImage = nullptr;
     pMusic = nullptr;
 
+    pLanderTexture = nullptr;
+    pThrustTexture = nullptr;
 
     pEnv = nullptr;
     pLander = nullptr;
+
+    currTick = 0.0;
+    prevTick = 0.0;
+    deltaTime = 0.0;
 
     windowWidth = width;
     windowHeight = height;
@@ -65,6 +71,7 @@ void Game::Init()
     }
 
     // Setup app icon
+
     SDL_Surface *pIconSurface = IMG_Load("resources/appicon.jpg");
 
     SDL_SetWindowIcon(pWindow, pIconSurface);
@@ -90,15 +97,42 @@ void Game::Init()
         exit(0);
     }
 
-
     pImage = SDL_CreateTextureFromSurface(pRenderer, pLoadedSurface);
     if (pImage == nullptr)
     {
         std::cout << "[Error] Unable to create texture: " << SDL_GetError() << std::endl;
     }
-
-
     SDL_FreeSurface(pLoadedSurface);
+
+
+    
+    // Load lander sprite
+    SDL_Surface *pLanderSurface = IMG_Load("resources/lander.jpeg");
+    if (pLanderSurface == nullptr)
+    {
+        std::cout << "[Error] Unable to load image: " << SDL_GetError() << std::endl;
+        exit(0);
+    }
+    pLanderTexture = SDL_CreateTextureFromSurface(pRenderer, pLanderSurface);
+    if (pLanderTexture == nullptr)
+    {
+        std::cout << "[Error] Unable to create texture: " << SDL_GetError() << std::endl;
+    }
+    SDL_FreeSurface(pLanderSurface);
+
+    // Load thrust sprite
+    SDL_Surface *pThrustSurface = IMG_Load("resources/thrust.jpeg");
+    if (pThrustSurface == nullptr)
+    {
+        std::cout << "[Error] Unable to load image: " << SDL_GetError() << std::endl;
+        exit(0);
+    }
+    pThrustTexture = SDL_CreateTextureFromSurface(pRenderer, pThrustSurface);
+    if (pThrustTexture == nullptr)
+    {
+        std::cout << "[Error] Unable to create texture: " << SDL_GetError() << std::endl;
+    }
+    SDL_FreeSurface(pThrustSurface);
 
     
     // Play audio
@@ -107,11 +141,11 @@ void Game::Init()
     // {
     //     std::cout << "[Error] Could not play music: " << SDL_GetError() << std::endl;
     // }
-
     // create env
     pEnv = new Environment(windowWidth, windowHeight);
     // Create rocket
-    pLander = new Lander(100, 100, 10, 10);
+    pLander = new Lander(50, 50, windowWidth/2 - 50/2, 100);
+    pLander->SetAcceleration(pEnv->GetGlobalAcceleration());
 
 }
 
@@ -157,6 +191,7 @@ void Game::Update()
 {
     // update physics every frame (i.e. gravity)
     pLander->Update(KEYS, pEnv);
+    // std::cout << "Fuel: " << pLander->GetFuel() << std::endl;
     
 }
 
@@ -171,8 +206,29 @@ void Game::Render()
 
     // Render the Lander
     SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 1);
-    SDL_RenderFillRect(pRenderer, pLander->GetSDLRect());
+    // SDL_RenderFillRect(pRenderer, pLander->GetSDLRect());
+    SDL_RenderCopyEx(pRenderer,                   // renderers
+                     pLanderTexture,              // source texture
+                     nullptr,                     // src rect
+                     pLander->GetLanderSDLRect(), // dst rect
+                     pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
+                     nullptr,                     // center ref point
+                     SDL_FLIP_NONE);              // flip ?
 
+    // Display thrust
+    if (KEYS[SDLK_UP])
+    {
+        SDL_RenderCopyEx(pRenderer,                   // renderers
+                         pThrustTexture,              // source texture
+                         nullptr,                     // src rect
+                         pLander->GetThrustSDLRect(), // dst rect
+                         pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
+                         nullptr,                     // center ref point
+                         SDL_FLIP_NONE);              // flip ?
+        
+        SDL_RenderDrawLine(pRenderer, pLander->GetLanderX(), pLander->GetLanderY(), pLander->GetThrustX(), pLander->GetThrustY());
+    }
+    // TODO: look into font atlases for optimal rendering of text
     // Render Text
     SDL_RenderCopy(pRenderer, pHeaderText, nullptr, &headerTextRect);
 
@@ -192,6 +248,7 @@ void Game::CleanUp()
     Mix_FreeMusic(pMusic);
     Mix_CloseAudio();
 
+    SDL_DestroyTexture(pLanderTexture);
     SDL_DestroyTexture(pHeaderText);
     SDL_DestroyTexture(pImage);
     TTF_CloseFont(pFont);
@@ -199,4 +256,25 @@ void Game::CleanUp()
     SDL_DestroyWindow(pWindow);
     SDL_Quit();
 
+}
+
+void Game::Run()
+{
+    Init();
+    while (IsRunning())
+    {
+        currTick = SDL_GetTicks();
+        deltaTime = currTick - prevTick;
+        if (deltaTime > 1000/60.0)
+        {
+            prevTick = currTick;
+            
+            HandleEvents();
+            // update state of internal objects
+            Update();
+            // display to the screen
+            Render();
+        }
+    }
+    CleanUp();
 }

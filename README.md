@@ -22,3 +22,9 @@ SDL2 Installs
 
 ## Acknowledgements
 - big thanks to https://github.com/JodyAndrews/SDL2_Basic_Setup for helping me set up this project :)
+
+
+## TODOS
+- font atlases for optimal text rendering (currently just printing everything in terminal)
+- live dashboard to visualize kinematics over time
+- visualize force vectors

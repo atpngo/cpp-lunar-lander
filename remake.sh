@@ -6,6 +6,6 @@ cmake ..
 make
 
 
-# cd ..
-# cp build/bin/LunarLander .
-# ./LunarLander
+cd ..
+cp build/bin/LunarLander .
+./LunarLander

@@ -1,21 +1,12 @@
 #include "Game.h"
 #include <iostream>
 
+#include "constants.h"
 int main()
-{
-
+{  
   Game *pGame = new Game("LunarLander", 640, 480);
-  pGame->Init();
-  while (pGame->IsRunning())
-  {
-    pGame->HandleEvents();
-    // update state of internal objects
-    pGame->Update();
-    // display to the screen
-    pGame->Render();
-  }
-  pGame->CleanUp();
+  
+  pGame->Run();
 
   delete pGame;
-
 }
