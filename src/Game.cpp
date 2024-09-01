@@ -7,7 +7,7 @@ Game::Game(std::string title, int width, int height)
     pFont = nullptr;
     pHeaderText = nullptr;
     pImage = nullptr;
-    pMusic = nullptr;
+    pThrustSFX = nullptr;
 
     pLanderTexture = nullptr;
     pThrustTexture = nullptr;
@@ -107,7 +107,7 @@ void Game::Init()
 
     
     // Load lander sprite
-    SDL_Surface *pLanderSurface = IMG_Load("resources/lander.jpeg");
+    SDL_Surface *pLanderSurface = IMG_Load("resources/lander.png");
     if (pLanderSurface == nullptr)
     {
         std::cout << "[Error] Unable to load image: " << SDL_GetError() << std::endl;
@@ -121,7 +121,8 @@ void Game::Init()
     SDL_FreeSurface(pLanderSurface);
 
     // Load thrust sprite
-    SDL_Surface *pThrustSurface = IMG_Load("resources/thrust.jpeg");
+    // SDL_Surface *pThrustSurface = IMG_Load("resources/thrust.jpeg");
+    SDL_Surface *pThrustSurface = IMG_Load("resources/thrust_sprite_map.png");
     if (pThrustSurface == nullptr)
     {
         std::cout << "[Error] Unable to load image: " << SDL_GetError() << std::endl;
@@ -136,11 +137,18 @@ void Game::Init()
 
     
     // Play audio
-    // pMusic = Mix_LoadMUS("resources/sound.ogg");
-    // if (Mix_PlayMusic(pMusic, -1) != 0)
+    // pThrustSFX = Mix_LoadMUS("resources/sound.ogg");
+    // if (Mix_PlayMusic(pThrustSFX, -1) != 0)
     // {
     //     std::cout << "[Error] Could not play music: " << SDL_GetError() << std::endl;
     // }
+    pThrustSFX = Mix_LoadWAV("resources/thrust_sound.wav");
+    if (pThrustSFX == nullptr)
+    {
+        std::cout << "[Error] Unable to load audio: " << SDL_GetError() << std::endl;
+        exit(0);
+    }
+    pThrustSFX->volume = 30;
     // create env
     pEnv = new Environment(windowWidth, windowHeight);
     // Create rocket
@@ -193,6 +201,13 @@ void Game::Update()
     pLander->Update(KEYS, pEnv);
     // std::cout << "Fuel: " << pLander->GetFuel() << std::endl;
     
+    if (KEYS[SDLK_UP])
+    {
+        Mix_PlayChannel( -1, pThrustSFX, 0 );
+        Mix_Resume(-1);
+    } else {
+        Mix_Pause(-1);
+    }
 }
 
 void Game::Render()
@@ -215,18 +230,22 @@ void Game::Render()
                      nullptr,                     // center ref point
                      SDL_FLIP_NONE);              // flip ?
 
+
     // Display thrust
     if (KEYS[SDLK_UP])
     {
+        thrustSpriteIndex = (SDL_GetTicks()/100) % 4;
+        thrustSpriteLocation.x = 50*thrustSpriteIndex;
+
         SDL_RenderCopyEx(pRenderer,                   // renderers
                          pThrustTexture,              // source texture
-                         nullptr,                     // src rect
+                         &thrustSpriteLocation,                     // src rect
                          pLander->GetThrustSDLRect(), // dst rect
                          pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
                          nullptr,                     // center ref point
                          SDL_FLIP_NONE);              // flip ?
         
-        SDL_RenderDrawLine(pRenderer, pLander->GetLanderX(), pLander->GetLanderY(), pLander->GetThrustX(), pLander->GetThrustY());
+        // SDL_RenderDrawLine(pRenderer, pLander->GetLanderX(), pLander->GetLanderY(), pLander->GetThrustX(), pLander->GetThrustY());
     }
     // TODO: look into font atlases for optimal rendering of text
     // Render Text
@@ -245,14 +264,17 @@ void Game::CleanUp()
         Mix_HaltMusic();
     }
 
-    Mix_FreeMusic(pMusic);
+    Mix_FreeChunk(pThrustSFX);
     Mix_CloseAudio();
+    Mix_Quit();
 
     SDL_DestroyTexture(pLanderTexture);
+    SDL_DestroyTexture(pThrustTexture);
     SDL_DestroyTexture(pHeaderText);
     SDL_DestroyTexture(pImage);
     TTF_CloseFont(pFont);
     TTF_Quit();
+    SDL_DestroyRenderer(pRenderer);
     SDL_DestroyWindow(pWindow);
     SDL_Quit();
 

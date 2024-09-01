@@ -52,8 +52,22 @@ void Lander::Update(std::map<int,bool> KEYS, Environment *pEnv)
     if (position.y + dimensions.height >= pEnv->GetHeight())
     {
         // we r on the ground
-        velocity.y = 0;
+        if (hasNotLanded)
+        {
+            hasNotLanded = false;
+            std::cout << "You landed!" << std::endl;
+            std::cout << "Velocity = " << velocity << std::endl;
+            std::cout << "Acceleration = " << velocity << std::endl;
+            std::cout << "Angle = " << angle-90 << " degrees" << std::endl;
+        }
         position.y = pEnv->GetHeight() - dimensions.height;
+        velocity.y = 0;
+        velocity.x = 0;
+        angle = 90.0;
+    }
+    else
+    {
+        hasNotLanded = true;
     }
 
     // std::cout << "Acceleration: " << acceleration << std::endl;

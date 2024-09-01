@@ -43,11 +43,15 @@ class Game
         // sample texture
         SDL_Texture *pImage;
         // sample music
-        Mix_Music *pMusic;
+        Mix_Chunk *pThrustSFX;
 
         // Lander texture
         SDL_Texture *pLanderTexture;
         SDL_Texture *pThrustTexture;
+
+        // Sprite Rect
+        SDL_Rect thrustSpriteLocation = {.x=0, .y=0, .w=50, .h=50};
+        uint32_t thrustSpriteIndex = 0;
 
         // POG MY DOG
         Environment *pEnv;

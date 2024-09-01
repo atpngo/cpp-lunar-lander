@@ -28,6 +28,7 @@ class Lander
         
 
     private:
+        bool hasNotLanded = true;
         SDL_Rect sdlLanderRect = {.x = 0, .y = 0, .w = 0, .h = 0};
         SDL_Rect sdlThrustRect = {.x = 0, .y = 0, .w = 0, .h = 0};
         SDL_Point sdlPoint = {.x = 0, .y = 0};

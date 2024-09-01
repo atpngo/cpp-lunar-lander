@@ -47,7 +47,7 @@ struct Vector
 };
 
 const float FUEL = 1000000;
-const float MAX_THRUST = 0.12; // Newtons
+const float MAX_THRUST = 0.12; // Newtonss
 const float GRAVITY_Y = -0.08; // Newtons
 // const float MAX_THRUST = 0.0; // Newtons
 // const float GRAVITY_Y = 0.0; // Newtons
