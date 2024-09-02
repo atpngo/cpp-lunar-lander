@@ -1,7 +1,6 @@
 #include "Game.h"
-#include <iostream>
+#include "NetworkUtility.h"
 
-#include "constants.h"
 int main()
 {  
   Game *pGame = new Game("LunarLander", 640, 800);

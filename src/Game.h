@@ -8,7 +8,7 @@
 #include "Lander.h"
 #include "Environment.h"
 #include <map>
-
+#include "NetworkUtility.h"
 class Game 
 {
     public:
@@ -22,6 +22,7 @@ class Game
         void CleanUp();
         bool IsRunning();
         void Run();
+        void Log();
 
 
     private:
@@ -56,6 +57,9 @@ class Game
         // POG MY DOG
         Environment *pEnv;
         Lander *pLander;
+
+        // Log
+        NetworkUtility *pSocket;
 
         // Frame rate
         float currTick;

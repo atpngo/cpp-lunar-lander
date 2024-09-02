@@ -17,41 +17,16 @@ Lander::~Lander()
 
 }
 
-void Lander::Update(std::map<int,bool> KEYS, Environment *pEnv)
+void Lander::Update(Environment *pEnv)
 {
-    // Handle thrust input (up arrow)
-    if (KEYS[SDLK_UP] && fuel > 0) {
-        float thrustX = MAX_THRUST * std::cos(GetAngleRad());
-        float thrustY = MAX_THRUST * std::sin(GetAngleRad());
-        thrust = {.x = thrustX, .y = thrustY};
-        fuel -= 1;
-        if (fuel == 0)
-            std::cout << "no mas fuel" << std::endl;
-    }
-    else
-    {
-        thrust = {.x = 0.0, .y = 0.0};
-    }
-
-    // Handle rotation (left/right arrows)
-    if (KEYS[SDLK_LEFT]) 
-    {
-        angle -= 1;
-    }
-    if (KEYS[SDLK_RIGHT])
-    {
-        angle += 1;
-    }
-    angle  = std::fmod(angle, 360.0);
 
     // kinematics tingz
     acceleration = pEnv->GetGlobalAcceleration() + thrust;
     velocity += acceleration;
-    position -= velocity;
-    // GRAVITY  
-    if (position.y + dimensions.height >= pEnv->GetHeight())
+    position += velocity;
+    if (position.y - dimensions.height <= 0)
     {
-        // we r on the ground
+
         if (hasNotLanded)
         {
             hasNotLanded = false;
@@ -60,7 +35,9 @@ void Lander::Update(std::map<int,bool> KEYS, Environment *pEnv)
             std::cout << "Acceleration = " << velocity << std::endl;
             std::cout << "Angle = " << angle-90 << " degrees" << std::endl;
         }
-        position.y = pEnv->GetHeight() - dimensions.height;
+        // todo: perhaps create some type of "distance sensor" to abstract environment
+        // todo: model actual physics collision w/ the ground (impulse, momentum and stuff)
+        position.y = dimensions.height;
         velocity.y = 0;
         velocity.x = 0;
         angle = 90.0;
@@ -68,13 +45,14 @@ void Lander::Update(std::map<int,bool> KEYS, Environment *pEnv)
     else
     {
         hasNotLanded = true;
-    }
+    }   
 
-    // std::cout << "Acceleration: " << acceleration << std::endl;
 
+    // TODO: probably should move this logic into Game.cpp
     // Internally update SDL Representation
-    sdlLanderRect.x = position.x;
-    sdlLanderRect.y = position.y;
+    // from (0,0) being top left to bottom right
+    sdlLanderRect.x = -1*position.x + pEnv->GetWidth();
+    sdlLanderRect.y = -1*position.y + pEnv->GetHeight();
     sdlLanderRect.w = dimensions.width;
     sdlLanderRect.h = dimensions.height;
 
@@ -127,5 +105,55 @@ float Lander::GetAngleRad()
 float Lander::GetAngleDeg()
 {
     return angle;
+}
+
+const Vector* Lander::GetPosition()
+{
+    return &position;
+}
+
+const Vector* Lander::GetVelocity()
+{
+    return &velocity;
+}
+
+const Vector* Lander::GetAcceleration()
+{
+    return &acceleration;
+}
+
+const Dimension* Lander::GetDimensions()
+{
+    return &dimensions;
+}
+
+void Lander::ActivateThruster()
+{
+    if (fuel <= 0)
+    {
+        std::cout << "no mas fuel" << std::endl;
+        return;
+    }
+
+    float thrustX = MAX_THRUST * std::cos(GetAngleRad());
+    float thrustY = MAX_THRUST * std::sin(GetAngleRad());
+    thrust = {.x = thrustX, .y = thrustY};
+    fuel -= 1;
+}
+
+void Lander::DeactivateThruster()
+{
+    thrust = {.x = 0.0, .y = 0.0};
+}
+
+void Lander::TurnLeft()
+{
+    angle -= 1;
+    angle = std::fmod(angle, 360.0);
+}
+void Lander::TurnRight()
+{
+    angle += 1;
+    angle = std::fmod(angle, 360.0);
 }
 

@@ -1,8 +1,6 @@
 #ifndef LANDER
 #define LANDER
 
-#include <vector>
-#include <map>
 #include "Environment.h"
 #include "SDL.h"
 #include "constants.h"
@@ -12,15 +10,30 @@ class Lander
     public:
         Lander(float width, float height, float x0, float y0);
         ~Lander();
-        void Update(std::map<int,bool> KEYS, Environment *pEnv);
+        void Update(Environment *pEnv);
+        void SetAcceleration(const Vector a);
         const SDL_Rect *GetLanderSDLRect();
         const SDL_Rect *GetThrustSDLRect();
+
+        // State
         float GetFuel();
-        void SetAcceleration(const Vector a);
         float GetAngleRad();
         float GetAngleDeg();
 
+        const Dimension *GetDimensions();
+        const Vector *GetPosition();
+        const Vector *GetVelocity();
+        const Vector *GetAcceleration();
+        
+        // Setters
+        void ActivateThruster();
+        void DeactivateThruster();
+        void TurnLeft();
+        void TurnRight();
+
+
         // Delete
+        // Center points
         float GetLanderX() { return sdlLanderRect.x+sdlLanderRect.w/2; };
         float GetLanderY() { return sdlLanderRect.y+sdlLanderRect.h/2; };
         float GetThrustX() { return sdlThrustRect.x+sdlThrustRect.w/2; };
@@ -28,10 +41,10 @@ class Lander
         
 
     private:
-        bool hasNotLanded = true;
         SDL_Rect sdlLanderRect = {.x = 0, .y = 0, .w = 0, .h = 0};
         SDL_Rect sdlThrustRect = {.x = 0, .y = 0, .w = 0, .h = 0};
-        SDL_Point sdlPoint = {.x = 0, .y = 0};
+
+        bool hasNotLanded = true;
         Dimension dimensions = {.width = 0.0, .height = 0.0};
         Vector position = {.x = 0.0, .y = 0.0};
         Vector velocity = {.x = 0.0, .y = 0.0};

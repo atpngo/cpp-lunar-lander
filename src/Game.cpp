@@ -1,5 +1,7 @@
 #include "Game.h"
 #include <iostream>
+#include "constants.h"
+
 Game::Game(std::string title, int width, int height)
 {
     pWindow = nullptr;
@@ -14,6 +16,7 @@ Game::Game(std::string title, int width, int height)
 
     pEnv = nullptr;
     pLander = nullptr;
+    pSocket = nullptr;
 
     currTick = 0.0;
     prevTick = 0.0;
@@ -26,14 +29,23 @@ Game::Game(std::string title, int width, int height)
 
 Game::~Game()
 {
-    std::cout << "dtor called" << std::endl;
     delete pEnv;
     delete pLander;
+    delete pSocket;
 }
 
 
 void Game::Init()
 {
+    pSocket = new NetworkUtility();
+    pSocket->SetState(NetworkUtility::CLIENT);
+    pSocket->OpenSocket(NetworkUtility::TCP);
+    pSocket->Connect(SERVER_ADDRESS, SERVER_PORT);
+    if (!pSocket->IsEnabled()) {
+        std::cout << "[Error] Unable to connect to server" << std::endl;
+        exit(0);
+    }
+
     // Init SDL2
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
@@ -136,12 +148,7 @@ void Game::Init()
     SDL_FreeSurface(pThrustSurface);
 
     
-    // Play audio
-    // pThrustSFX = Mix_LoadMUS("resources/sound.ogg");
-    // if (Mix_PlayMusic(pThrustSFX, -1) != 0)
-    // {
-    //     std::cout << "[Error] Could not play music: " << SDL_GetError() << std::endl;
-    // }
+    // Load audio
     pThrustSFX = Mix_LoadWAV("resources/thrust_sound.wav");
     if (pThrustSFX == nullptr)
     {
@@ -149,11 +156,14 @@ void Game::Init()
         exit(0);
     }
     pThrustSFX->volume = 30;
+
     // create env
     pEnv = new Environment(windowWidth, windowHeight);
     // Create rocket
-    pLander = new Lander(50, 50, windowWidth/2 - 50/2, 100);
+    pLander = new Lander(50, 50, windowWidth/2 + 50/2, 500);
     pLander->SetAcceleration(pEnv->GetGlobalAcceleration());
+
+    
 
 }
 
@@ -176,7 +186,6 @@ void Game::HandleEvents()
             case (SDL_QUIT):
                 isRunning = SDL_FALSE;
                 break;
-            // Handle key presses here!
             case (SDL_KEYDOWN):
                 if (event.key.keysym.sym == SDLK_ESCAPE) 
                     isRunning = SDL_FALSE;
@@ -190,16 +199,36 @@ void Game::HandleEvents()
                 break;
         }
         
-        // Handle mouse events here :)
         HandleMouseDrag(event);
     }
+
+    // Handle Lunar Lander I/O
+    // Handle thrust input (up arrow)
+    if (KEYS[SDLK_UP] && pLander->GetFuel() > 0) {
+        pLander->ActivateThruster();
+    }
+    else
+    {
+        pLander->DeactivateThruster();
+    }
+
+    // Handle rotation (left/right arrows)
+    if (KEYS[SDLK_LEFT]) 
+    {
+        pLander->TurnLeft();
+    }
+    if (KEYS[SDLK_RIGHT])
+    {
+        pLander->TurnRight();
+    }
+    
+
 }
 
 void Game::Update() 
 {
     // update physics every frame (i.e. gravity)
-    pLander->Update(KEYS, pEnv);
-    // std::cout << "Fuel: " << pLander->GetFuel() << std::endl;
+    pLander->Update(pEnv);
     
     if (KEYS[SDLK_UP])
     {
@@ -221,7 +250,6 @@ void Game::Render()
 
     // Render the Lander
     SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 1);
-    // SDL_RenderFillRect(pRenderer, pLander->GetSDLRect());
     SDL_RenderCopyEx(pRenderer,                   // renderers
                      pLanderTexture,              // source texture
                      nullptr,                     // src rect
@@ -280,6 +308,23 @@ void Game::CleanUp()
 
 }
 
+
+
+void Game::Log()
+{
+    // Look at lunar lander state and log
+    std::vector<float> sensorValues;
+    sensorValues.push_back(pLander->GetPosition()->x);
+    sensorValues.push_back(pLander->GetPosition()->y);
+    sensorValues.push_back(pLander->GetVelocity()->x);
+    sensorValues.push_back(pLander->GetVelocity()->y);
+    sensorValues.push_back(pLander->GetAcceleration()->x);
+    sensorValues.push_back(pLander->GetAcceleration()->y);
+    sensorValues.push_back(pLander->GetAngleDeg());
+    sensorValues.push_back(pLander->GetFuel());
+    pSocket->Send(GetVectorAsString(sensorValues));
+}
+
 void Game::Run()
 {
     Init();
@@ -294,6 +339,8 @@ void Game::Run()
             HandleEvents();
             // update state of internal objects
             Update();
+            // Log state
+            Log();
             // display to the screen
             Render();
         }
