@@ -31,6 +31,8 @@ class Lander
         void TurnLeft();
         void TurnRight();
 
+        bool IsThrusterActive();
+
 
         // Delete
         // Center points
@@ -53,6 +55,8 @@ class Lander
         float mass = 100; // kg
         Vector thrust = {.x = 0.0, .y = 0.0};
         float angle = 90.0; // degrees
+
+        bool isThrusterActive;
 
 
 };

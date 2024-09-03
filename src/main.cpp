@@ -1,9 +1,9 @@
 #include "Game.h"
-#include "NetworkUtility.h"
+#include "constants.h"
 
 int main()
 {  
-  Game *pGame = new Game("LunarLander", 640, 800);
+  Game *pGame = new Game("LunarLander", WINDOW_WIDTH, WINDOW_HEIGHT);
   
   pGame->Run();
 

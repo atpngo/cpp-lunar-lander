@@ -10,4 +10,3 @@ make
 cd ..
 cp build/bin/LunarLander .
 ./LunarLander
-**/log.csv

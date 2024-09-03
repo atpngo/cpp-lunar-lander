@@ -55,4 +55,4 @@ dkms.conf
 build
 .vscode
 LunarLander
-log.csv
+**/log.csv

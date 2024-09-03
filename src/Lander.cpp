@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <iostream>
 #include <cmath>
+#include "constants.h"
 
 Lander::Lander(float width, float height, float x0, float y0)
 {
@@ -24,7 +25,7 @@ void Lander::Update(Environment *pEnv)
     acceleration = pEnv->GetGlobalAcceleration() + thrust;
     velocity += acceleration;
     position += velocity;
-    if (position.y - dimensions.height <= 0)
+    if (position.y <= 0)
     {
 
         if (hasNotLanded)
@@ -37,7 +38,7 @@ void Lander::Update(Environment *pEnv)
         }
         // todo: perhaps create some type of "distance sensor" to abstract environment
         // todo: model actual physics collision w/ the ground (impulse, momentum and stuff)
-        position.y = dimensions.height;
+        position.y = 0;
         velocity.y = 0;
         velocity.x = 0;
         angle = 90.0;
@@ -51,8 +52,8 @@ void Lander::Update(Environment *pEnv)
     // TODO: probably should move this logic into Game.cpp
     // Internally update SDL Representation
     // from (0,0) being top left to bottom right
-    sdlLanderRect.x = -1*position.x + pEnv->GetWidth();
-    sdlLanderRect.y = -1*position.y + pEnv->GetHeight();
+    sdlLanderRect.x = -1*position.x + pEnv->GetWidth() - dimensions.width/2;
+    sdlLanderRect.y = -1*position.y + pEnv->GetHeight() - dimensions.height;
     sdlLanderRect.w = dimensions.width;
     sdlLanderRect.h = dimensions.height;
 
@@ -88,7 +89,7 @@ const SDL_Rect* Lander::GetThrustSDLRect()
 
 float Lander::GetFuel()
 {
-    return fuel;
+    return (fuel/FUEL)*100;
 }
 
 
@@ -139,11 +140,13 @@ void Lander::ActivateThruster()
     float thrustY = MAX_THRUST * std::sin(GetAngleRad());
     thrust = {.x = thrustX, .y = thrustY};
     fuel -= 1;
+    isThrusterActive = true;
 }
 
 void Lander::DeactivateThruster()
 {
     thrust = {.x = 0.0, .y = 0.0};
+    isThrusterActive = false;
 }
 
 void Lander::TurnLeft()
@@ -155,5 +158,10 @@ void Lander::TurnRight()
 {
     angle += 1;
     angle = std::fmod(angle, 360.0);
+}
+
+bool Lander::IsThrusterActive()
+{
+    return isThrusterActive;
 }
 

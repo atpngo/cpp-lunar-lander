@@ -25,7 +25,10 @@ set(SOURCE_FILES    src/main.cpp
                     src/Environment.h 
                     src/constants.h 
                     src/NetworkUtility.cpp 
-                    src/NetworkUtility.h)
+                    src/NetworkUtility.h
+                    src/Controller.h
+                    src/Controller.cpp
+)
 
 Message("")
 Message( STATUS "SOURCE entry point : " ${SOURCE_FILES} )

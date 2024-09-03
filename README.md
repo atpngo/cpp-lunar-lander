@@ -26,10 +26,18 @@ SDL2 Installs
 
 ## TODOS
 - font atlases for optimal text rendering (currently just printing everything in terminal)
-- live dashboard to visualize kinematics over time
-    - moving average
-    - possibly use TIG stack (or maybe just the TG stack lol) for this one :D
 - visualize force vectors
 - reconstruct a flight from a log
 - procedural terrain/obstacle generation
 - autonomous controls 
+- better physics
+    - currently lander doesn't account for mass of itself and its fuel
+    - air resistance/drag
+    - thrust vectoring
+- autonomously move to mouse
+
+
+## Controllers
+- on/off (lol)
+- pid 
+    - control variable duty cycle (discrete engine on/off state)

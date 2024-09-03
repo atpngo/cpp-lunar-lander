@@ -9,6 +9,8 @@
 #include "Environment.h"
 #include <map>
 #include "NetworkUtility.h"
+#include "Controller.h"
+
 class Game 
 {
     public:
@@ -60,6 +62,9 @@ class Game
 
         // Log
         NetworkUtility *pSocket;
+
+        // Controls
+        Controller *pController;
 
         // Frame rate
         float currTick;

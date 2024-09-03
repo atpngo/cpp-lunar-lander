@@ -17,6 +17,7 @@ Game::Game(std::string title, int width, int height)
     pEnv = nullptr;
     pLander = nullptr;
     pSocket = nullptr;
+    pController = nullptr;
 
     currTick = 0.0;
     prevTick = 0.0;
@@ -32,6 +33,7 @@ Game::~Game()
     delete pEnv;
     delete pLander;
     delete pSocket;
+    delete pController;
 }
 
 
@@ -160,9 +162,11 @@ void Game::Init()
     // create env
     pEnv = new Environment(windowWidth, windowHeight);
     // Create rocket
-    pLander = new Lander(50, 50, windowWidth/2 + 50/2, 500);
+    pLander = new Lander(LANDER_WIDTH, LANDER_HEIGHT, LANDER_INITIAL_X, LANDER_INITIAL_Y);
     pLander->SetAcceleration(pEnv->GetGlobalAcceleration());
 
+
+    pController = new Controller();
     
 
 }
@@ -227,10 +231,16 @@ void Game::HandleEvents()
 
 void Game::Update() 
 {
+    // autonomous controls poggers
+    bool activate = pController->MoveTo(pLander->GetPosition()->y, pLander->GetVelocity()->y, 0);
+    if (activate)
+        pLander->ActivateThruster();
+    else
+        pLander->DeactivateThruster();
     // update physics every frame (i.e. gravity)
     pLander->Update(pEnv);
     
-    if (KEYS[SDLK_UP])
+    if (pLander->IsThrusterActive() && AUDIO_ON)
     {
         Mix_PlayChannel( -1, pThrustSFX, 0 );
         Mix_Resume(-1);
@@ -260,7 +270,7 @@ void Game::Render()
 
 
     // Display thrust
-    if (KEYS[SDLK_UP])
+    if (pLander->IsThrusterActive())
     {
         thrustSpriteIndex = (SDL_GetTicks()/100) % 4;
         thrustSpriteLocation.x = 50*thrustSpriteIndex;

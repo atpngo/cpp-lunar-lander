@@ -51,17 +51,29 @@ struct Vector
 
 };
 
-const float FUEL = 1000;
+const float FUEL = 10000000;
 const float MAX_THRUST = 0.12; // Newtonss
 const float GRAVITY_Y = -0.08; // Newtons
 // const float MAX_THRUST = 0.0; // Newtons
 // const float GRAVITY_Y = 0.0; // Newtons
-const float PI = 3.14159265;
+const double PI = 3.14159265;
+const double EULER = 2.71828182845904523536;
 
 const std::string SERVER_ADDRESS = "127.0.0.1";
 const unsigned int SERVER_PORT = 3490;
 
+const bool AUDIO_ON = false;
+const float DT = 1/60;
 
+const int WINDOW_WIDTH = 640;
+const int WINDOW_HEIGHT = 900;
+
+// Lander
+const int LANDER_WIDTH = 50;
+const int LANDER_HEIGHT = 50;
+const int LANDER_INITIAL_X = WINDOW_WIDTH/2;
+const int LANDER_INITIAL_Y = 1000; // meters 
+// const int LANDER_INITIAL_Y = 0; // meters 
 
 
 struct Dimension
@@ -82,6 +94,10 @@ inline std::string GetVectorAsString(std::vector<float> v, int precision = 6)
     return ss.str();
 }
 
+inline float Sigmoid(float x)
+{
+    return 1/(1+std::pow(EULER, x));
+}
 
 // Colors
 
