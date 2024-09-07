@@ -4,6 +4,7 @@
 #include "Environment.h"
 #include "SDL.h"
 #include "constants.h"
+#include "Gimbal.h"
 
 class Lander
 {
@@ -24,6 +25,8 @@ class Lander
         const Vector *GetPosition();
         const Vector *GetVelocity();
         const Vector *GetAcceleration();
+        const Vector *GetCenterOfMass();
+
         
         // Setters
         void ActivateThruster();
@@ -40,9 +43,12 @@ class Lander
         float GetLanderY() { return sdlLanderRect.y+sdlLanderRect.h/2; };
         float GetThrustX() { return sdlThrustRect.x+sdlThrustRect.w/2; };
         float GetThrustY() { return sdlThrustRect.y+sdlThrustRect.h/2; };
+
+
         
 
     private:
+    // should probably move this somewhere later
         SDL_Rect sdlLanderRect = {.x = 0, .y = 0, .w = 0, .h = 0};
         SDL_Rect sdlThrustRect = {.x = 0, .y = 0, .w = 0, .h = 0};
 
@@ -51,12 +57,17 @@ class Lander
         Vector position = {.x = 0.0, .y = 0.0};
         Vector velocity = {.x = 0.0, .y = 0.0};
         Vector acceleration = {.x = 0.0, .y = 0.0};
+        Vector centerOfMass;
+        float angularAcceleration = 0.0;
+        float angularVelocity = 0.0;
+        float angularPosition = 90.0;
         float fuel = FUEL;
         float mass = 100; // kg
         Vector thrust = {.x = 0.0, .y = 0.0};
-        float angle = 90.0; // degrees
 
         bool isThrusterActive;
+
+        Gimbal *pGimbal;
 
 
 };

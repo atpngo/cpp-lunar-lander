@@ -10,19 +10,35 @@ Lander::Lander(float width, float height, float x0, float y0)
     dimensions.height = height;
     position.x = x0;
     position.y = y0;
+    centerOfMass.x = dimensions.width/2;
+    centerOfMass.y = dimensions.height/2;
+    pGimbal = new Gimbal(90.0);
 }
 
 
 Lander::~Lander()
 {
+    delete pGimbal;
+}
 
+const Vector* Lander::GetCenterOfMass()
+{
+    return &centerOfMass;
 }
 
 void Lander::Update(Environment *pEnv)
 {
 
+    
+    // for now, assume no mass (LMAO)
+    // torque = inertia * angular accel
+    // we will simplify this and just say torque = angular accel (LOL)
+    // torque = FRsin(theta)
+    // thrust vector
+
     // kinematics tingz
     acceleration = pEnv->GetGlobalAcceleration() + thrust;
+    
     velocity += acceleration;
     position += velocity;
     if (position.y <= 0)
@@ -34,14 +50,14 @@ void Lander::Update(Environment *pEnv)
             std::cout << "You landed!" << std::endl;
             std::cout << "Velocity = " << velocity << std::endl;
             std::cout << "Acceleration = " << velocity << std::endl;
-            std::cout << "Angle = " << angle-90 << " degrees" << std::endl;
+            std::cout << "Angle = " << pGimbal->GetAngle()-90 << " degrees" << std::endl;
         }
         // todo: perhaps create some type of "distance sensor" to abstract environment
         // todo: model actual physics collision w/ the ground (impulse, momentum and stuff)
         position.y = 0;
         velocity.y = 0;
         velocity.x = 0;
-        angle = 90.0;
+        pGimbal->SetAngle(90.0);
     }
     else
     {
@@ -100,12 +116,12 @@ void Lander::SetAcceleration(const Vector a)
 
 float Lander::GetAngleRad()
 {
-    return angle*PI/180.0;
+    return pGimbal->GetAngle()*PI/180.0;
 }
 
 float Lander::GetAngleDeg()
 {
-    return angle;
+    return pGimbal->GetAngle();
 }
 
 const Vector* Lander::GetPosition()
@@ -136,6 +152,8 @@ void Lander::ActivateThruster()
         return;
     }
 
+    // 1) change GetAngleRad() to pGimbal->GetAngleRad()
+    // 2) calculate the angular acceleration of the rocket relative to its own angle
     float thrustX = MAX_THRUST * std::cos(GetAngleRad());
     float thrustY = MAX_THRUST * std::sin(GetAngleRad());
     thrust = {.x = thrustX, .y = thrustY};
@@ -151,13 +169,11 @@ void Lander::DeactivateThruster()
 
 void Lander::TurnLeft()
 {
-    angle -= 1;
-    angle = std::fmod(angle, 360.0);
+    pGimbal->DecreaseAngle();
 }
 void Lander::TurnRight()
 {
-    angle += 1;
-    angle = std::fmod(angle, 360.0);
+    pGimbal->IncreaseAngle();
 }
 
 bool Lander::IsThrusterActive()

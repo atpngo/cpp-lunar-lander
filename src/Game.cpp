@@ -183,6 +183,8 @@ bool Game::IsRunning()
 
 void Game::HandleEvents()
 {
+    SDL_GetMouseState(&mouseX, &mouseY);
+
     while (SDL_PollEvent(&event)) 
     {
         switch (event.type)
@@ -232,11 +234,11 @@ void Game::HandleEvents()
 void Game::Update() 
 {
     // autonomous controls poggers
-    bool activate = pController->MoveTo(pLander->GetPosition()->y, pLander->GetVelocity()->y, 0);
-    if (activate)
-        pLander->ActivateThruster();
-    else
-        pLander->DeactivateThruster();
+    // bool activate = pController->MoveTo(pLander->GetPosition()->y, pLander->GetVelocity()->y, GetMouseY());
+    // if (activate)
+    //     pLander->ActivateThruster();
+    // else
+    //     pLander->DeactivateThruster();
     // update physics every frame (i.e. gravity)
     pLander->Update(pEnv);
     
@@ -264,7 +266,8 @@ void Game::Render()
                      pLanderTexture,              // source texture
                      nullptr,                     // src rect
                      pLander->GetLanderSDLRect(), // dst rect
-                     pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
+                     0,
+                    //  pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
                      nullptr,                     // center ref point
                      SDL_FLIP_NONE);              // flip ?
 
@@ -356,4 +359,15 @@ void Game::Run()
         }
     }
     CleanUp();
+}
+
+
+int Game::GetMouseX()
+{
+    return mouseX;
+}
+
+int Game::GetMouseY()
+{
+    return WINDOW_HEIGHT-mouseY;
 }

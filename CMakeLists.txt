@@ -28,6 +28,8 @@ set(SOURCE_FILES    src/main.cpp
                     src/NetworkUtility.h
                     src/Controller.h
                     src/Controller.cpp
+                    src/Gimbal.h
+                    src/Gimbal.cpp
 )
 
 Message("")

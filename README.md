@@ -16,12 +16,20 @@ SDL2 Installs
 
 
 ## Command Line Build
+- Start Up:
+    - Grafana
+    - Telegraf
+    - Python Server
+    - OPTIONAL: Jupyter Lab
 
 - ./remake.sh
 
 
 ## Acknowledgements
 - big thanks to https://github.com/JodyAndrews/SDL2_Basic_Setup for helping me set up this project :)
+
+## Features
+- PID CONTROL IN THE Y-AXIS YAY
 
 
 ## TODOS
@@ -30,11 +38,13 @@ SDL2 Installs
 - reconstruct a flight from a log
 - procedural terrain/obstacle generation
 - autonomous controls 
-- better physics
+    - convert "rotation" into a fixed gimbal -> thrust vectoring
+    - need to compute x distance angle and adjust 
+- better physics (working on this)
+    - learn what the ideal rocket equation is
     - currently lander doesn't account for mass of itself and its fuel
     - air resistance/drag
-    - thrust vectoring
-- autonomously move to mouse
+    - wind
 
 
 ## Controllers

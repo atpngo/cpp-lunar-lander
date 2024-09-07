@@ -26,6 +26,10 @@ class Game
         void Run();
         void Log();
 
+        int GetMouseX();
+        int GetMouseY();
+
+
 
     private:
         std::map<int,bool> KEYS;
@@ -66,10 +70,15 @@ class Game
         // Controls
         Controller *pController;
 
+
         // Frame rate
         float currTick;
         float prevTick;
         float deltaTime;
+
+        // mouse position
+        int mouseX = 0;
+        int mouseY = 0;
 
 };
 

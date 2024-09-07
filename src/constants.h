@@ -11,7 +11,7 @@
 // Classes
 struct Vector
 {
-    float x, y;
+    double x, y;
 
     Vector operator+(const Vector &rhs) const {
         return Vector{x+rhs.x, y+rhs.y};
@@ -51,7 +51,6 @@ struct Vector
 
 };
 
-const float FUEL = 10000000;
 const float MAX_THRUST = 0.12; // Newtonss
 const float GRAVITY_Y = -0.08; // Newtons
 // const float MAX_THRUST = 0.0; // Newtons
@@ -74,7 +73,14 @@ const int LANDER_HEIGHT = 50;
 const int LANDER_INITIAL_X = WINDOW_WIDTH/2;
 const int LANDER_INITIAL_Y = 1000; // meters 
 // const int LANDER_INITIAL_Y = 0; // meters 
+const float FUEL = 200000; // liters of fuel
+// TODO: IDEAL ROCKET EQUATION STUFF
+const double LANDER_DRY_MASS = 22200; // kilograms
+const double FUEL_DENSITY = 0.81; // kg/L >
+const double LANDER_WET_MASS = FUEL*FUEL_DENSITY; // 
 
+// GIMBAL
+const double GIMBAL_MAX_ANGLE_RANGE = 10.5; // +/- DEGREES
 
 struct Dimension
 {
@@ -94,9 +100,20 @@ inline std::string GetVectorAsString(std::vector<float> v, int precision = 6)
     return ss.str();
 }
 
-inline float Sigmoid(float x)
+inline double Sigmoid(double x)
 {
     return 1/(1+std::pow(EULER, x));
+}
+
+
+/*
+ve - exhaust velocity (m/s)
+m0 - initial mass (kg)
+mf - final mass (kg)
+*/
+inline double IdealRocketEquation(double ve, double m0, double mf)
+{
+    return 0.0;
 }
 
 // Colors
