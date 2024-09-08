@@ -8,10 +8,12 @@ class Gimbal
         Gimbal(double initialAngle = 90.0);
         ~Gimbal();
         void SetAngle(double angle);
-        double GetAngle();
+        double GetAngleDeg();
+        double GetAngleRad();
 
         void DecreaseAngle();
         void IncreaseAngle();
+        double GetGimbalAngle(); // clamped between min and max (-10.5 - 10.5)
 
     private:
         double minAngle;

@@ -12,8 +12,6 @@ Gimbal::Gimbal(double initialAngle)
     maxAngle = 90+GIMBAL_MAX_ANGLE_RANGE;
 }
 
-// TODO: the gimbal exerts torque on the rocket itself....
-// rocket needs to have its own angular pos, vel, acc
 
 
 Gimbal::~Gimbal()
@@ -37,7 +35,17 @@ void Gimbal::IncreaseAngle()
     angularPosition = std::min(maxAngle, angularPosition+angularVelocity);
 }
 
-double Gimbal::GetAngle()
+double Gimbal::GetAngleDeg()
 {
     return angularPosition;
+}
+
+double Gimbal::GetAngleRad()
+{
+    return DEG_TO_RAD(angularPosition);
+}
+
+double Gimbal::GetGimbalAngle()
+{
+    return angularPosition-90;
 }

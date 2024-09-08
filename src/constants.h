@@ -105,6 +105,20 @@ inline double Sigmoid(double x)
     return 1/(1+std::pow(EULER, x));
 }
 
+inline double DEG_TO_RAD(double deg)
+{
+    return deg*PI/180;
+}
+
+inline double RAD_TO_DEG(double rad)
+{
+    return rad*180/PI;
+}
+
+inline double GetMagnitude(const Vector* v)
+{
+    return std::hypot(v->x, v->y);
+}
 
 /*
 ve - exhaust velocity (m/s)
@@ -114,6 +128,28 @@ mf - final mass (kg)
 inline double IdealRocketEquation(double ve, double m0, double mf)
 {
     return 0.0;
+}
+
+/*
+angle is in RADIANS
+rotate (x, y) about (originX, originY)
+*/
+inline std::pair<double, double> RotatePoint(double x, double y, double angle, double originX, double originY)
+{
+    std::pair<double, double> new_points;
+    double s = std::sin(angle);
+    double c = std::cos(angle);
+    x -= originX;
+    y -= originY;
+    double x_new = x*c - y*s;
+    double y_new = x*s + y*c;
+    x = x_new + originX;
+    y = y_new + originY;
+
+    new_points.first = x;
+    new_points.second = y;
+
+    return new_points;
 }
 
 // Colors

@@ -260,18 +260,6 @@ void Game::Render()
     // Render background image
     SDL_RenderCopy(pRenderer, pImage, nullptr, nullptr);
 
-    // Render the Lander
-    SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 1);
-    SDL_RenderCopyEx(pRenderer,                   // renderers
-                     pLanderTexture,              // source texture
-                     nullptr,                     // src rect
-                     pLander->GetLanderSDLRect(), // dst rect
-                     0,
-                    //  pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
-                     nullptr,                     // center ref point
-                     SDL_FLIP_NONE);              // flip ?
-
-
     // Display thrust
     if (pLander->IsThrusterActive())
     {
@@ -282,12 +270,23 @@ void Game::Render()
                          pThrustTexture,              // source texture
                          &thrustSpriteLocation,                     // src rect
                          pLander->GetThrustSDLRect(), // dst rect
-                         pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
+                         pLander->GetThrustAngleDeg()-90, 
                          nullptr,                     // center ref point
                          SDL_FLIP_NONE);              // flip ?
         
         // SDL_RenderDrawLine(pRenderer, pLander->GetLanderX(), pLander->GetLanderY(), pLander->GetThrustX(), pLander->GetThrustY());
     }
+
+        // Render the Lander
+    SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 1);
+    SDL_RenderCopyEx(pRenderer,                   // renderers
+                     pLanderTexture,              // source texture
+                     nullptr,                     // src rect
+                     pLander->GetLanderSDLRect(), // dst rect
+                    //  0,
+                     pLander->GetAngleDeg()-90,   // angle (subtract bc 0deg is straight up in SDL)
+                     nullptr,                     // center ref point
+                     SDL_FLIP_NONE);              // flip ?
     // TODO: look into font atlases for optimal rendering of text
     // Render Text
     SDL_RenderCopy(pRenderer, pHeaderText, nullptr, &headerTextRect);
