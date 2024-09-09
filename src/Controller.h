@@ -4,10 +4,11 @@
 class Controller
 {
     public:
-        Controller();
+        Controller(double p, double i, double d);
         ~Controller();
         // PID using 3 sensors
-        bool MoveTo(float py, float vy, float targetAltitude);
+        bool MoveToY(double py, double vy, double targetAltitude);
+        double MoveToAngle(double theta, double omega, double targetAngle, double gimbalAngle);
 
     private:
         long double error = 0;
@@ -16,9 +17,9 @@ class Controller
         long double deltaError = 0;
 
         // PID Constants
-        long double Kp = 1;
-        long double Ki = 0.0;
-        long double Kd = 100; 
+        double Kp = 1;
+        double Ki = 0.0;
+        double Kd = 100; 
         // 1, 0, 20 seems to work well from going from ground to air
 };
 

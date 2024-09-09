@@ -25,6 +25,7 @@ class Game
         bool IsRunning();
         void Run();
         void Log();
+        void Autonomous();
 
         int GetMouseX();
         int GetMouseY();
@@ -68,7 +69,9 @@ class Game
         NetworkUtility *pSocket;
 
         // Controls
-        Controller *pController;
+        Controller *pYController;
+        Controller *pXController;
+        Controller *pRotationController;
 
 
         // Frame rate

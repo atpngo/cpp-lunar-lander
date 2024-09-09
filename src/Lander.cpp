@@ -52,7 +52,7 @@ void Lander::Update(Environment *pEnv)
     acceleration = pEnv->GetGlobalAcceleration() + thrust;
     
     velocity += acceleration;
-    position += velocity;
+    // position += velocity;
     if (position.y <= 0)
     {
 
@@ -222,4 +222,9 @@ double Lander::GetThrustAngleRad()
 double Lander::GetThrustAngleDeg()
 {
     return GetAngleDeg() + pGimbal->GetGimbalAngle();
+}
+
+double Lander::GetAngularVelocity()
+{
+    return angularVelocity;
 }

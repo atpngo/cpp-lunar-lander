@@ -71,7 +71,7 @@ const int WINDOW_HEIGHT = 900;
 const int LANDER_WIDTH = 50;
 const int LANDER_HEIGHT = 50;
 const int LANDER_INITIAL_X = WINDOW_WIDTH/2;
-const int LANDER_INITIAL_Y = 1000; // meters 
+const int LANDER_INITIAL_Y = 600; // meters 
 // const int LANDER_INITIAL_Y = 0; // meters 
 const float FUEL = 200000; // liters of fuel
 // TODO: IDEAL ROCKET EQUATION STUFF
@@ -152,7 +152,13 @@ inline std::pair<double, double> RotatePoint(double x, double y, double angle, d
     return new_points;
 }
 
-// Colors
-
+inline double clamp(double number, double min, double max)
+{
+    if (number < min)
+        return min;
+    if (number > min)
+        return max;
+    return number;
+}
 
 #endif // CONSTANTS

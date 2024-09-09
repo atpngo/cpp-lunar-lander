@@ -31,6 +31,8 @@ class Lander
         double GetGimbalAngle();
         double GetThrustAngleRad();
         double GetThrustAngleDeg();
+
+        double GetAngularVelocity();
         
         // Setters
         void ActivateThruster();

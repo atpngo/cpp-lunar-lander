@@ -6,7 +6,7 @@
 Gimbal::Gimbal(double initialAngle)
 {
     angularPosition = initialAngle;
-    angularVelocity = 1.0;
+    angularVelocity = 2.0;
     angularAcceleration = 0.0;
     minAngle = 90-GIMBAL_MAX_ANGLE_RANGE;
     maxAngle = 90+GIMBAL_MAX_ANGLE_RANGE;

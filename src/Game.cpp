@@ -17,7 +17,9 @@ Game::Game(std::string title, int width, int height)
     pEnv = nullptr;
     pLander = nullptr;
     pSocket = nullptr;
-    pController = nullptr;
+    pYController = nullptr;
+    pXController = nullptr;
+    pRotationController = nullptr;
 
     currTick = 0.0;
     prevTick = 0.0;
@@ -33,7 +35,9 @@ Game::~Game()
     delete pEnv;
     delete pLander;
     delete pSocket;
-    delete pController;
+    delete pYController;
+    delete pXController;
+    delete pRotationController;
 }
 
 
@@ -166,7 +170,9 @@ void Game::Init()
     pLander->SetAcceleration(pEnv->GetGlobalAcceleration());
 
 
-    pController = new Controller();
+    pYController = new Controller(1, 0, 100);
+    pXController = new Controller(1, 0, 100);
+    pRotationController = new Controller(5, 0, 200);
     
 
 }
@@ -227,18 +233,32 @@ void Game::HandleEvents()
     {
         pLander->TurnRight();
     }
-    
 
 }
 
-void Game::Update() 
+void Game::Autonomous()
 {
-    // autonomous controls poggers
-    // bool activate = pController->MoveTo(pLander->GetPosition()->y, pLander->GetVelocity()->y, GetMouseY());
+    // Control thrusters (rn its just y-dir)
+    // bool activate = pYController->MoveToY(pLander->GetPosition()->y, pLander->GetVelocity()->y, GetMouseY());
     // if (activate)
     //     pLander->ActivateThruster();
     // else
     //     pLander->DeactivateThruster();
+    pLander->ActivateThruster();
+    double angle = pRotationController->MoveToAngle(pLander->GetAngleDeg(), pLander->GetAngularVelocity(), 80, pLander->GetGimbalAngle());
+
+    if (angle > 0)
+        pLander->TurnLeft();
+    else if (angle < 0)
+        pLander->TurnRight();
+
+
+    
+}
+
+void Game::Update() 
+{
+    
     // update physics every frame (i.e. gravity)
     pLander->Update(pEnv);
     
@@ -274,11 +294,11 @@ void Game::Render()
                          nullptr,                     // center ref point
                          SDL_FLIP_NONE);              // flip ?
         
-        // SDL_RenderDrawLine(pRenderer, pLander->GetLanderX(), pLander->GetLanderY(), pLander->GetThrustX(), pLander->GetThrustY());
     }
 
-        // Render the Lander
+    // Render the Lander
     SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 1);
+    SDL_RenderDrawLine(pRenderer, pLander->GetLanderX(), pLander->GetLanderY(), pLander->GetThrustX(), pLander->GetThrustY());
     SDL_RenderCopyEx(pRenderer,                   // renderers
                      pLanderTexture,              // source texture
                      nullptr,                     // src rect
@@ -349,6 +369,7 @@ void Game::Run()
             prevTick = currTick;
             
             HandleEvents();
+            Autonomous();
             // update state of internal objects
             Update();
             // Log state
