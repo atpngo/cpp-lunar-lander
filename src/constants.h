@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <sstream>
 #include <format>
+#include <algorithm>
 
 // Classes
 struct Vector
@@ -156,9 +157,16 @@ inline double clamp(double number, double min, double max)
 {
     if (number < min)
         return min;
-    if (number > min)
+    if (number > max)
         return max;
     return number;
+}
+
+
+inline double GetAngleBetweenPoints(double x1, double y1, double x2, double y2)
+{
+    // x1 and y1 is our origin
+    return -1*RAD_TO_DEG(std::atan2( (y2-y1), (x2-x1) )) + 180;
 }
 
 #endif // CONSTANTS

@@ -172,7 +172,7 @@ void Game::Init()
 
     pYController = new Controller(1, 0, 100);
     pXController = new Controller(1, 0, 100);
-    pRotationController = new Controller(5, 0, 200);
+    pRotationController = new Controller(1, 0, 100);
     
 
 }
@@ -244,8 +244,13 @@ void Game::Autonomous()
     //     pLander->ActivateThruster();
     // else
     //     pLander->DeactivateThruster();
+    double x1 = pLander->GetPosition()->x;
+    double y1 = pLander->GetPosition()->y;
+    double x2 = GetMouseX();
+    double y2 = GetMouseY();
+    double targetAngle = GetAngleBetweenPoints(x1, y1, x2, y2);
     pLander->ActivateThruster();
-    double angle = pRotationController->MoveToAngle(pLander->GetAngleDeg(), pLander->GetAngularVelocity(), 80, pLander->GetGimbalAngle());
+    double angle = pRotationController->MoveToAngle(pLander->GetAngleDeg(), pLander->GetAngularVelocity(), targetAngle, pLander->GetGimbalAngle());
 
     if (angle > 0)
         pLander->TurnLeft();
