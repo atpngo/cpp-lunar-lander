@@ -39,7 +39,7 @@ void Lander::Update(Environment *pEnv)
     // torque = FRsin(theta)
     // thrust vector
     float thrustAngle = GetThrustAngleRad();
-    float thrustX = thrustMagnitude * std::cos( thrustAngle );
+    float thrustX = -1*thrustMagnitude * std::cos( thrustAngle );
     float thrustY = thrustMagnitude * std::sin( thrustAngle );
     thrust = {.x = thrustX, .y = thrustY};
     double F = thrustMagnitude;
@@ -52,7 +52,7 @@ void Lander::Update(Environment *pEnv)
     acceleration = pEnv->GetGlobalAcceleration() + thrust;
     
     velocity += acceleration;
-    // position += velocity;
+    position += velocity;
     if (position.y <= 0)
     {
 
@@ -64,8 +64,7 @@ void Lander::Update(Environment *pEnv)
             std::cout << "Acceleration = " << velocity << std::endl;
             std::cout << "Angle = " << pGimbal->GetAngleDeg()-90 << " degrees" << std::endl;
         }
-        // todo: perhaps create some type of "distance sensor" to abstract environment
-        // todo: model actual physics collision w/ the ground (impulse, momentum and stuff)
+
         position.y = 0;
         velocity.y = 0;
         velocity.x = 0;
@@ -83,7 +82,8 @@ void Lander::Update(Environment *pEnv)
     // TODO: probably should move this logic into Game.cpp
     // Internally update SDL Representation
     // from (0,0) being top left to bottom right
-    sdlLanderRect.x = -1*position.x + pEnv->GetWidth() - dimensions.width/2;
+    // sdlLanderRect.x = -1*position.x + pEnv->GetWidth() - dimensions.width/2;
+    sdlLanderRect.x = position.x;
     sdlLanderRect.y = -1*position.y + pEnv->GetHeight() - dimensions.height;
     sdlLanderRect.w = dimensions.width;
     sdlLanderRect.h = dimensions.height;

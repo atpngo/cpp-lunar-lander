@@ -25,8 +25,8 @@ bool Controller::MoveToY(double py, double vy, double targetAltitude)
 /*
 theta - the rocket's angle in the real world relative to the horizon
 */
-double Controller::MoveToAngle(double theta, double omega, double targetAngle, double gimbalAngle)
+double Controller::MoveToAngle(double theta, double omega, double targetAngle, double gimbalAngle, double vx)
 {
-    double PID = Kp*(theta-targetAngle) + Kd*(omega) + gimbalAngle;
+    double PID = Kp*(theta-targetAngle) + Kd*(omega) + gimbalAngle + (100)*vx;
     return PID;
 }

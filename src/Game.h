@@ -83,6 +83,9 @@ class Game
         int mouseX = 0;
         int mouseY = 0;
 
+        double x2;
+        double y2;
+
 };
 
 #endif // GAME

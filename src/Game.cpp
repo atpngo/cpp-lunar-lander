@@ -27,6 +27,9 @@ Game::Game(std::string title, int width, int height)
 
     windowWidth = width;
     windowHeight = height;
+
+    x2 = 200;
+    y2 = 100;
     
 }
 
@@ -172,7 +175,7 @@ void Game::Init()
 
     pYController = new Controller(1, 0, 100);
     pXController = new Controller(1, 0, 100);
-    pRotationController = new Controller(1, 0, 100);
+    pRotationController = new Controller(1, 0, 50);
     
 
 }
@@ -238,23 +241,33 @@ void Game::HandleEvents()
 
 void Game::Autonomous()
 {
-    // Control thrusters (rn its just y-dir)
-    // bool activate = pYController->MoveToY(pLander->GetPosition()->y, pLander->GetVelocity()->y, GetMouseY());
-    // if (activate)
-    //     pLander->ActivateThruster();
-    // else
-    //     pLander->DeactivateThruster();
-    double x1 = pLander->GetPosition()->x;
+    double x1 = pLander->GetPosition()->x + 25;
     double y1 = pLander->GetPosition()->y;
-    double x2 = GetMouseX();
-    double y2 = GetMouseY();
-    double targetAngle = GetAngleBetweenPoints(x1, y1, x2, y2);
-    pLander->ActivateThruster();
-    double angle = pRotationController->MoveToAngle(pLander->GetAngleDeg(), pLander->GetAngularVelocity(), targetAngle, pLander->GetGimbalAngle());
 
-    if (angle > 0)
+    x2 = 200;
+    y2 = 0;
+    // x2 = GetMouseX();
+    // y2 = GetMouseY();
+
+    // // Fire thrusters depending on how far we are from the target
+    bool activate = pYController->MoveToY(pLander->GetPosition()->y, pLander->GetVelocity()->y, y2);
+    if (activate)
+        pLander->ActivateThruster();
+    else
+        pLander->DeactivateThruster();
+    
+    // pLander->ActivateThruster();
+    
+
+    
+    // Calculate angle needed to reach target
+    double tmpY = y1 + std::abs(y1-y2);
+    double targetAngle = GetAngleBetweenPoints(x1, y1, x2, tmpY);
+    double PID = pRotationController->MoveToAngle(pLander->GetAngleDeg(), pLander->GetAngularVelocity(), targetAngle, pLander->GetGimbalAngle(), pLander->GetVelocity()->x);
+
+    if (PID > 0)
         pLander->TurnLeft();
-    else if (angle < 0)
+    else if (PID < 0)
         pLander->TurnRight();
 
 
@@ -283,7 +296,7 @@ void Game::Render()
     SDL_RenderClear(pRenderer);
 
     // Render background image
-    SDL_RenderCopy(pRenderer, pImage, nullptr, nullptr);
+    // SDL_RenderCopy(pRenderer, pImage,nullptr, nullptr);
 
     // Display thrust
     if (pLander->IsThrusterActive())
@@ -315,6 +328,13 @@ void Game::Render()
     // TODO: look into font atlases for optimal rendering of text
     // Render Text
     SDL_RenderCopy(pRenderer, pHeaderText, nullptr, &headerTextRect);
+
+    double graphicalY2 = WINDOW_HEIGHT-y2;
+    SDL_RenderDrawPoint(pRenderer, x2, graphicalY2);
+    SDL_RenderDrawPoint(pRenderer, x2+1, graphicalY2+1);
+    SDL_RenderDrawPoint(pRenderer, x2-1, graphicalY2+1);
+    SDL_RenderDrawPoint(pRenderer, x2-1, graphicalY2-1);
+    SDL_RenderDrawPoint(pRenderer, x2+1, graphicalY2-1);
 
     // Add everything to renderer
     SDL_RenderPresent(pRenderer);

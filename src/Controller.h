@@ -8,7 +8,7 @@ class Controller
         ~Controller();
         // PID using 3 sensors
         bool MoveToY(double py, double vy, double targetAltitude);
-        double MoveToAngle(double theta, double omega, double targetAngle, double gimbalAngle);
+        double MoveToAngle(double theta, double omega, double targetAngle, double gimbalAngle, double vx);
 
     private:
         long double error = 0;
