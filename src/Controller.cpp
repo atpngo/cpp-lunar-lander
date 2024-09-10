@@ -27,6 +27,7 @@ theta - the rocket's angle in the real world relative to the horizon
 */
 double Controller::MoveToAngle(double theta, double omega, double targetAngle, double gimbalAngle, double vx)
 {
+    // std::cout << theta-targetAngle << std::endl;
     double PID = Kp*(theta-targetAngle) + Kd*(omega) + gimbalAngle + (100)*vx;
     return PID;
 }

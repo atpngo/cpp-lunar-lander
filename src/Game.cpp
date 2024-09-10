@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <iostream>
 #include "constants.h"
+#include <algorithm>
 
 Game::Game(std::string title, int width, int height)
 {
@@ -241,13 +242,36 @@ void Game::HandleEvents()
 
 void Game::Autonomous()
 {
+
     double x1 = pLander->GetPosition()->x + 25;
     double y1 = pLander->GetPosition()->y;
 
-    x2 = 200;
+    x2 = 50;
     y2 = 0;
+
     // x2 = GetMouseX();
     // y2 = GetMouseY();
+
+    double x_error = std::abs(x1-x2);
+    double y_error = std::abs(y1-y2);
+    double error = std::hypot(x_error, y_error);
+    if (error <= 25) {
+        // std::cout << "Within 25m of the target" << std::endl;
+        // maintain altitude
+        double altitudeController = pYController->MoveToY(y1, pLander->GetVelocity()->y, y2);
+        if (altitudeController)
+            pLander->ActivateThruster();
+        else
+            pLander->DeactivateThruster();
+        // maintain 90 deg
+        double gimbalController = pRotationController->MoveToAngle(pLander->GetAngleDeg(), pLander->GetAngularVelocity(), 90, pLander->GetGimbalAngle(), pLander->GetVelocity()->x);
+        if (gimbalController > 0)
+            pLander->TurnLeft();
+        else if (gimbalController < 0)
+            pLander->TurnRight();
+        
+        return;
+    }
 
     // // Fire thrusters depending on how far we are from the target
     bool activate = pYController->MoveToY(pLander->GetPosition()->y, pLander->GetVelocity()->y, y2);
@@ -256,9 +280,6 @@ void Game::Autonomous()
     else
         pLander->DeactivateThruster();
     
-    // pLander->ActivateThruster();
-    
-
     
     // Calculate angle needed to reach target
     double tmpY = y1 + std::abs(y1-y2);
@@ -379,6 +400,7 @@ void Game::Log()
     sensorValues.push_back(pLander->GetAcceleration()->y);
     sensorValues.push_back(pLander->GetAngleDeg());
     sensorValues.push_back(pLander->GetFuel());
+    sensorValues.push_back(pLander->GetGimbalAngle());
     pSocket->Send(GetVectorAsString(sensorValues));
 }
 
@@ -394,7 +416,7 @@ void Game::Run()
             prevTick = currTick;
             
             HandleEvents();
-            Autonomous();
+            // Autonomous();
             // update state of internal objects
             Update();
             // Log state

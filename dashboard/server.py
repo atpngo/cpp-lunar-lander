@@ -8,7 +8,7 @@ ADDRESS = "127.0.0.1"
 TELEGRAF_ADDRESS = ("127.0.0.1", 4000)
 
 telegraf_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-columns = ["time", "px", "py", "vx", "vy", "ax", "ay", "rotation", "fuel"]
+columns = ["time", "px", "py", "vx", "vy", "ax", "ay", "rotation", "fuel", "gimbalAngle"]
 
 def sensor_to_influx(sensor_data: str, fields):
     data = sensor_data.split(',')
